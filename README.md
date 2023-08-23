@@ -110,4 +110,4 @@ The -d flag specifies that we want to disassemble the code, and sum1ton.o is the
 </details>
 </details>
 
-<details>
+
