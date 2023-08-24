@@ -476,8 +476,404 @@ At this point, the fetched instruction is in the instruction register, and the C
 <img width="905" alt="5" src="https://github.com/VaibhavTiwari-IIITB/RISCV/assets/140998525/ba9436e0-ebfc-4ef1-9e67-87271aa14dfe">
 </div>
 
+
 </details>
 
 </div>
 </detail>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<details>
+
+<summary><strong>Day 5</strong></summary>
+<p>
+<h2>Pitfalls of Pipelining: Navigating Branch Instruction Hazards</h2>
+
+Pipelining, a technique aimed at bolstering processor speed, subdivides instruction execution into discrete phases. However, the introduction of pipelining also ushers in challenges known as hazards—obstacles that can disrupt the fluid progression of instructions. Among these, the "branch instruction hazard," commonly recognized as the "branch penalty," stands out prominently.
+
+**1. Structural Clash:**
+
+A structural hazard arises when resource conflicts emerge within the pipeline. For instance, a branch instruction might vie for access to the same processing unit or memory segment already occupied by another instruction in the pipeline. This clash forces a pipeline pause, during which resources are either redistributed or the conflict is resolved. Structural hazards sow inefficiency and chip away at performance by delaying instruction completion.
+
+**2. Data Tug-of-War:**
+
+Data hazards manifest when instructions hinge on outcomes from earlier instructions, yet the requisite data remains elusive. In the context of branch instructions, data hazards crop up when succeeding instructions lean on the result of a prior branch instruction. However, the actual outcome of the branch—whether it's taken or not—remains uncertain. Mismanagement of this can yield inaccurate results. Techniques like forwarding or stalling resolve data hazards, ensuring that instructions access accurate data for proper execution.
+
+**3. Control Conundrum (Branch Hazard):**
+
+Control hazards take center stage when grappling with branch instructions in pipelining. They stem from the ambiguity surrounding a branch's outcome—whether it will be taken or bypassed. In a pipelined processor, instructions are proactively fetched to sustain pipeline flow. Yet, the actual verdict of a branch might only materialize during the execution phase. If the branch's outcome diverges from the prediction formed during the fetch phase, subsequent instructions procured after the branch could prove erroneous.
+
+In response to control hazards, contemporary processors leverage branch prediction techniques to formulate educated guesses about a branch's likelihood of being taken. Accurate predictions facilitate seamless pipeline advancement. However, if predictions falter, a process labeled "pipeline flushing" comes into play. This entails discarding all instructions procured after the misjudged branch, effectively resetting the pipeline to the correct sequence. Such flushing exacts a performance toll, termed the "branch penalty," as it squanders effort and triggers pipeline halts.
+
+In summation, branch instructions introduce hazards to pipelining due to the demand for judgment calls concerning instruction sequence, resource allotment, and data interdependencies. Skillful hazard management through strategies like branch prediction and pipeline flushing proves pivotal in upholding pipeline efficiency and amplifying processor performance.
+</p>	
+
+<p>
+<h2>Unveiling the Waterfall Logic Paradigm</h2>
+
+Waterfall logic, often referred to as the "waterfall model," is a sequential software development approach that encapsulates the essence of linear progression. This methodology is characterized by a structured, step-by-step framework, where each phase flows into the next like a cascading waterfall. This document delves into the key aspects of the waterfall logic paradigm, elucidating its stages, merits, and limitations.
+
+**1. Phases of Waterfall Logic:**
+
+The waterfall model comprises distinct, well-defined phases, each building upon the accomplishments of the preceding one:
+
+**a. Requirements Gathering:** Inception involves capturing comprehensive project requirements, setting the stage for the subsequent phases.
+
+**b. System Design:** This phase outlines the overall system architecture, identifying components and their relationships.
+
+**c. Implementation:** Here, the actual coding takes place, translating design concepts into functional software.
+
+**d. Testing:** Rigorous testing verifies the software's functionality against requirements, identifying defects for rectification.
+
+**e. Deployment:** The fully tested software is deployed to the intended environment, making it accessible to users.
+
+**f. Maintenance:** Post-deployment, ongoing maintenance tackles bug fixes, updates, and enhancements.
+
+**2. Advantages of Waterfall Logic:**
+
+- **Clarity and Predictability:** The linear nature of waterfall logic offers clarity in project progression, making it easier to estimate timelines and resources.
+  
+- **Comprehensive Documentation:** Each phase mandates documentation, resulting in a well-documented project lifecycle for future reference.
+  
+- **Early Planning:** Rigorous initial planning ensures a solid foundation, reducing the likelihood of major changes down the line.
+  
+- **Clear Milestones:** Well-defined phase boundaries provide clear milestones, aiding project tracking and assessment.
+  
+**3. Limitations and Criticisms:**
+
+- **Inflexibility:** Once a phase is completed, revisiting it can be challenging, making it less adaptive to changing requirements.
+  
+- **Late User Involvement:** Stakeholder input typically occurs early, potentially leading to a mismatch between the final product and user needs.
+  
+- **Uncertainty Handling:** Inadequate provisions for addressing uncertainties or evolving requirements may hinder adaptability.
+  
+- **Real-world Application Suitability:** Ideal for projects with well-understood requirements, but may not align with projects that demand iterative exploration.
+  
+**4. Variations and Modern Adaptations:**
+
+Over time, variations and adaptations of the waterfall model have emerged, such as the "V-Model," which emphasizes rigorous testing in conjunction with each development phase, and the "W-Model," which incorporates maintenance and user feedback loops.
+
+**Conclusion:**
+
+The waterfall logic paradigm, reminiscent of a cascading waterfall, offers a structured, methodical approach to software development. Its sequential nature fosters clarity and predictability, yielding comprehensive documentation and clear milestones. However, its rigidity and potential lack of adaptability to evolving requirements have prompted the development of more flexible methodologies. As the software development landscape evolves, waterfall logic remains a foundational model that continues to inspire adaptations and innovations.
+
+<div align="center">
+<img width="1470" alt="1" src="https://github.com/VaibhavTiwari-IIITB/RISCV/assets/140998525/80781a78-38dd-410f-9b55-3f6f48599f81">
+</div>
+
+<h4>Final 4 stage implementation code</h4>
+
+```tlv
+\m4_TLV_version 1d: tl-x.org
+\SV
+   // This code can be found in: https://github.com/stevehoover/RISC-V_MYTH_Workshop
+   
+   m4_include_lib(['https://raw.githubusercontent.com/BalaDhinesh/RISC-V_MYTH_Workshop/master/tlv_lib/risc-v_shell_lib.tlv'])
+
+\SV
+   m4_makerchip_module   // (Expanded in Nav-TLV pane.)
+\TLV
+     
+   // /====================\
+   // | Sum 1 to 9 Program |
+   // \====================/
+   //
+   // Program for MYTH Workshop to test RV32I
+   // Add 1,2,3,...,9 (in that order).
+   //
+   // Regs:
+   //  r10 (a0): In: 0, Out: final sum
+   //  r12 (a2): 10
+   //  r13 (a3): 1..10
+   //  r14 (a4): Sum
+   // 
+   // External to function:
+   m4_asm(ADD, r10, r0, r0)             // Initialize r10 (a0) to 0.
+   // Function:
+   m4_asm(ADD, r14, r10, r0)            // Initialize sum register a4 with 0x0
+   m4_asm(ADDI, r12, r10, 1010)         // Store count of 10 in register a2.
+   m4_asm(ADD, r13, r10, r0)            // Initialize intermediate sum register a3 with 0
+   // Loop:
+   m4_asm(ADD, r14, r13, r14)           // Incremental addition
+   m4_asm(ADDI, r13, r13, 1)            // Increment intermediate register by 1
+   m4_asm(BLT, r13, r12, 1111111111000) // If a3 is less than a2, branch to label named <loop>
+   m4_asm(ADD, r10, r14, r0)            // Store final result to register a0 so that it can be read by main program
+   m4_asm(SW, r0, r10, 100)
+   m4_asm(LW, r15, r0, 100)
+   // Optional:
+   // m4_asm(JAL, r7, 00000000000000000000) // Done. Jump to itself (infinite loop). (Up to 20-bit signed immediate plus implicit 0 bit (unlike JALR) provides byte address; last immediate bit should also be 0)
+   m4_define_hier(['M4_IMEM'], M4_NUM_INSTRS)
+
+   |cpu
+      @0
+         $reset = *reset;
+              //Fetch1   
+         $pc[31:0] = >>1$reset ? 32'b0 :
+                     >>3$valid_taken_br ? >>3$br_tgt_pc :
+                     >>3$valid_load ? >>3$inc_pc : 
+                     (>>3$valid_jump && >>3$is_jal) ? >>3$br_tgt_pc :
+                     (>>3$valid_jump && >>3$is_jalr) ? >>3$jalr_tgt_pc :
+                     >>1$inc_pc;
+                     
+                    
+      @1
+         $inc_pc[31:0] = $pc + 32'd4 ;
+         $imem_rd_en = !>>1$reset;    
+         $imem_rd_addr[M4_IMEM_INDEX_CNT-1:0] = $pc[M4_IMEM_INDEX_CNT+1:2]; 
+      @3
+                
+         $valid = !(>>1$valid_taken_br || >>2$valid_taken_br || >>1$valid_load || >>2$valid_load 
+                    || >>1$valid_jump || >>2$valid_jump) ;
+                    
+         $valid_load = $valid && $is_load ;
+         $valid_jump = $valid && $is_load;
+                       
+                       
+                 
+            //$valid_load = $valid && $is_load ;
+                
+            //Fetch2 
+      @1
+         $instr[31:0] = $imem_rd_data[31:0]; 
+               
+          //Instructions type decode 
+         $is_i_instr = $instr[6:2] ==? 5'b0000x || 
+                       $instr[6:2] ==? 5'b001x0 || 
+                       $instr[6:2] ==? 5'b11001 ;
+         $is_r_instr = $instr[6:2] ==? 5'b011x0 || 
+                       $instr[6:2] ==? 5'b01011 || 
+                       $instr[6:2] ==? 5'b10100 ; 
+         $is_s_instr = $instr[6:2] ==? 5'b0100x ;
+         $is_b_instr = $instr[6:2] ==? 5'b11000 ;
+         $is_j_instr = $instr[6:2] ==? 5'b11011 ;
+         $is_u_instr = $instr[6:2] ==? 5'b0x101 ;
+         
+           //Instruction immediate decode
+         $imm[31:0] = $is_i_instr ? {{21{$instr[31]}},$instr[30:20] }:
+                      $is_s_instr ? {{21{$instr[31]}},$instr[30:25],$instr[11:8],$instr[7]} :
+                      $is_b_instr ? {{20{$instr[31]}},$instr[7],$instr[30:25],$instr[11:8],1'b0} :
+                      $is_u_instr ? {$instr[31], $instr[30:20],$instr[19:12],12'b0 }:
+                      $is_j_instr ? {{12{$instr[31]}},$instr[19:12],$instr[20],$instr[30:21],1'b0} :
+                      32'b0 ;
+         $opcode[6:0] = $instr[6:0];
+
+           //b. func7 decode
+
+         $func7_valid = $is_r_instr ;
+         ?$func7_valid
+            $func7[6:0] = $instr[31:25];
+         //c. rs2 decode
+
+         $rs2_valid = $is_r_instr || $is_s_instr || $is_b_instr ;
+         ?$rs2_valid
+            $rs2[4:0] = $instr[24:20];
+
+          //d. rs1 valid
+
+         $rs1_valid = $is_r_instr || $is_i_instr || $is_s_instr || $is_b_instr ;
+         ?$rs1_valid
+            $rs1[4:0] = $instr[19:15] ;
+
+          //e. func3 valid
+
+         $func3_valid = $is_r_instr || $is_i_instr || $is_s_instr || $is_b_instr ;
+         ?$func3_valid
+            $func3[2:0] = $instr[14:12] ;
+
+         $rd_valid = $is_r_instr || $is_i_instr || $is_u_instr || $is_j_instr ;
+         ?$rd_valid
+            $rd[4:0] = $instr[11:7];     
+      
+         $dec_bits[10:0] = {$func7[5], $func3, $opcode} ;
+         $is_beq = $dec_bits ==? 11'bx_000_1100011 ;
+         $is_bne = $dec_bits ==? 11'bx_001_1100011 ;
+         $is_blt = $dec_bits ==? 11'bx_100_1100011 ;
+         $is_bge = $dec_bits ==? 11'bx_101_1100011 ;           
+         $is_bltu = $dec_bits ==? 11'bx_110_1100011 ;
+         $is_bgeu = $dec_bits ==? 11'bx_111_1100011 ;  
+         $is_addi = $dec_bits ==? 11'bx_000_0010011 ;
+         $is_add = $dec_bits ==? 11'b0_000_0110011 ;
+         
+         $is_load = $dec_bits ==? 11'bx_xxx_0000011;
+         
+         $is_sb = $dec_bits ==? 11'bx_000_0100011;
+         $is_sh = $dec_bits ==? 11'bx_001_0100011;
+         $is_sw = $dec_bits ==? 11'bx_010_0100011;
+         $is_slti = $dec_bits ==? 11'bx_010_0010011;
+         $is_sltiu = $dec_bits ==? 11'bx_011_0010011;
+         $is_xori = $dec_bits ==? 11'bx_100_0010011;
+         $is_ori = $dec_bits ==? 11'bx_110_0010011;
+         $is_andi = $dec_bits ==? 11'bx_111_0010011;
+         $is_slli = $dec_bits ==? 11'b0_001_0010011;
+         $is_srli = $dec_bits ==? 11'b0_101_0010011;
+         $is_srai = $dec_bits ==? 11'b1_101_0010011;
+         $is_sub = $dec_bits ==? 11'b1_000_0110011;
+         $is_sll = $dec_bits ==? 11'b0_001_0110011;
+         $is_slt = $dec_bits ==? 11'b0_010_0110011;
+         $is_sltu = $dec_bits ==? 11'b0_011_0110011;
+         $is_xor = $dec_bits ==? 11'b0_100_0110011;
+         $is_srl = $dec_bits ==? 11'b0_101_0110011;
+         $is_sra = $dec_bits ==? 11'b1_101_0110011;
+         $is_or = $dec_bits ==? 11'b0_110_0110011;
+         $is_and = $dec_bits ==? 11'b0_111_0110011;
+         $is_lui = $dec_bits ==? 11'bx_xxx_0110111;
+         $is_auipc = $dec_bits ==? 11'bx_xxx_0010111;
+         $is_jal = $dec_bits ==? 11'bx_xxx_1101111;
+         $is_jalr = $dec_bits ==? 11'bx_000_1100111;
+         $is_jump = $is_jal || $is_jalr ;
+         
+         `BOGUS_USE($is_beq $is_bne $is_blt $is_bge $is_bltu $is_bgeu $is_addi $is_add) 
+      @2
+         
+            //Register file read
+         $rf_rd_en1 = $rs1_valid && >>2$result ;
+         $rf_rd_index1[4:0] = $rs1 ;
+         $rf_rd_en2 = $rs2_valid && >>2$result;
+         $rf_rd_index2[4:0] = $rs2 ;
+
+      //Branch_instruction2
+         $br_tgt_pc[31:0] = $pc + $imm ;
+
+     //source to alu assigned with o/p of read register
+         $src1_value[31:0] = 
+              (>>1$rf_wr_index == $rf_rd_index1) && >>1$rf_wr_en ?
+                 >>1$result :
+                  $rf_rd_data1;
+         $src2_value[31:0] = 
+              (>>1$rf_wr_index == $rf_rd_index2) && >>1$rf_wr_en ?
+                 >>1$result :
+                   $rf_rd_data2;
+                   
+      //dmem:1-R/W memory             
+      @4
+         $dmem_wr_en = $is_s_instr && $valid ;
+         $dmem_addr[3:0] = $result[5:2] ;
+         $dmem_wr_data[31:0] = $src2_value ;
+         $dmem_rd_en = $is_load ;
+        
+      @4
+         //LOAD DATA
+         $ld_data[31:0] = $dmem_rd_data ;
+      @3
+         $jalr_tgt_pc[31:0] = $src1_value + $imm ;
+      
+      @3
+     //Assigning aadi and add value to alu
+         $sltu_rslt[31:0] = $src1_value < $src2_value ;
+         $sltiu_rslt[31:0]  = $src1_value < $imm ;
+         
+         $result[31:0] =
+              $is_addi ? $src1_value + $imm :
+              $is_add ? $src1_value + $src2_value :
+              $is_andi ? $src1_value & $imm :
+              $is_ori  ? $src1_value | $imm :
+              $is_xori ? $src1_value ^ $imm :
+              $is_slli ? $src1_value << $imm[5:0] :
+              $is_srli ? $src1_value >> $imm[5:0] :
+              $is_and ? $src1_value & $src2_value :
+              $is_or ? $src1_value | $src2_value :
+              $is_xor ? $src1_value ^ $src2_value :
+              $is_sub ? $src1_value - $src2_value :
+              $is_sll ? $src1_value << $src2_value[4:0] :
+              $is_srl ? $src1_value >> $src2_value[4:0] :
+              $is_sltu ? $src1_value < $src2_value :
+              $is_sltiu ? $src1_value < $imm :
+              $is_lui ? {$imm[31:12], 12'b0} :
+              $is_auipc ? $pc + $imm : 
+              $is_jal ? $pc + 32'd4 :
+              $is_jalr ? $pc + 32'd4 :
+              $is_srai ? {{32{$src1_value[31]}}, $src1_value} >> $imm[4:0] :
+              $is_slt ? ($src1_value[31] == $src2_value[31]) ? $sltu_rslt : {31'b0, $src1_value[31]} :
+              $is_slti ? ($src1_value[31] == $imm[31]) ? $sltiu_rslt : {31'b0, $src1_value[31]} :
+              $is_sra ? {{32{$src1_value[31]}}, $src1_value} >> $src2_value[4:0] :
+              $is_load || $is_s_instr ? $src1_value + $imm :
+              32'bx ;
+        //Register file write
+         $rf_wr_en = $rd_valid && $rd != 5'b0 && $valid || >>2$valid_load ;
+         $rf_wr_index[4:0] = >>2$valid_load ? >>2$rd : $rd ;
+         $rf_wr_data[31:0] = >>2$valid_load ? >>2$ld_data : $result ;
+
+        //Branch insturctions
+         $taken_br = $is_beq ? ($src1_value == $src2_value):
+                     $is_bne ? ($src1_value != $src2_value):
+                     $is_blt ? (($src1_value < $src2_value) ^ ($src1_value[31] != $src2_value[31])):
+                     $is_bge ? (($src1_value >= $src2_value) ^ ($src1_value[31]!= $src2_value[31])):
+                     $is_bltu ? ($src1_value > $src2_value) :
+                     $is_bgeu ? ($src1_value >= $src2_value) :
+                     1'b0 ;
+           //for invalid instruction
+         $valid_taken_br = $valid && $taken_br ;
+         
+         // Note: Because of the magic we are using for visualisation, if visualisation is enabled below,
+         //       be sure to avoid having unassigned signals (which you might be using for random inputs)
+         //       other than those specifically expected in the labs. You'll get strange errors for these.
+         // Assert these to end simulation (before Makerchip cycle limit).
+          //*passed = *cyc_cnt > 40;
+   *passed = |cpu/xreg[15]>>5$value == (1+2+3+4+5+6+7+8+9);
+   *failed = 1'b0;
+   
+   // Macro instantiations for:
+   //  o instruction memory
+   //  o register file
+   //  o data memory
+   //  o CPU visualization
+   |cpu
+      m4+imem(@1)    // Args: (read stage)
+      m4+rf(@2, @3)  // Args: (read stage, write stage) - if equal, no register bypass is required
+      m4+dmem(@4)    // Args: (read/write stage)
+   
+   m4+cpu_viz(@4)    // For visualisation, argument should be at least equal to the last stage of CPU logic. @4 would work for all labs.
+\SV
+   endmodule
+
+```
+
+<h4>Schematic output</h4>
+<div align="center">
+<img width="446" alt="2" src="https://github.com/VaibhavTiwari-IIITB/RISCV/assets/140998525/2b43b622-0ab1-4779-98dd-d934ad29fd3f">
+</div>	
+
+<h4>Waveform</h4>
+<div align="center">
+<img width="922" alt="3" src="https://github.com/VaibhavTiwari-IIITB/RISCV/assets/140998525/6c5230c9-6408-4e7b-a5dc-5ca41850c0a9">
+</div>	
+
+</p>
+
+</details>
+ 
+ 
+
+ ## Reference 
+ 
+- https://github.com/kunalg123/
+- https://www.vsdiat.com
+- https://en.wikipedia.org/wiki/Toolchain
+- https://en.wikipedia.org/wiki/GNU_toolchain
+- https://github.com/riscv/riscv-gnu-toolchain
+- https://github.com/riscv-software-src/homebrew-riscv/tree/main
+- https://github.com/NiteshIIITB/RISC-V
+- https://redwoodeda.com
+- https://ieeexplore.ieee.org/document/8119264
+- https://github.com/stevehoover
+
+
+
 
