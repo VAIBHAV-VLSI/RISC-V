@@ -122,6 +122,167 @@ The -d flag specifies that we want to disassemble the code, and sum1ton.o is the
 
 
 
+
+<details>
+<summary><strong>Day 2</strong></summary>
+<h2>The New Algorithm For Sum 1ton c program</h2>	
+
+<div align="center">
+<img width="737" alt="Screenshot 2023-08-24 at 12 11 19 PM" src="https://github.com/VaibhavTiwari-IIITB/RISCV/assets/140998525/52586927-3aed-4df1-8a72-f34503e5449d">
+</div>
+
+<h2>Code</h2>
+
+```c
+#include <stdio.h>
+
+extern int load(int x, int y); 
+
+int main() {
+	int result = 0;
+       	int count = 9;
+    	result = load(0x0, count+1);
+    	printf("Sum of number from 1 to %d is %d\n", count, result); 
+}
+
+```
+
+<h2>Assembly Code For Load Function</h2>
+
+```asm
+.section .text
+.global load
+.type load, @function
+
+load:
+	add 	a4, a0, zero //Initialize sum register a4 with 0x0
+	add 	a2, a0, a1   // store count of 10 in register a2. Register a1 is loaded with 0xa (decimal 10) from main program
+	add	a3, a0, zero // initialize intermediate sum register a3 by 0
+loop:	add 	a4, a3, a4   // Incremental addition
+	addi 	a3, a3, 1    // Increment intermediate register by 1	
+	blt 	a3, a2, loop // If a3 is less than a2, branch to label named <loop>
+	add	a0, a4, zero // Store final result to register a0 so that it can be read by main program
+	ret
+
+```
+<h2>Execution</h2>
+<div align="center">
+[	<img src="https://github.com/VaibhavTiwari-IIITB/RISCV/assets/140998525/e2ad21ce-829a-4717-86be-519fe047ce59">
+</div>
+
+
+
+<h2>Contents of rv32im.sh(Shell script file)</h2>
+
+```
+riscv64-unknown-elf-gcc -c -mabi=ilp32 -march=rv32im -o 1to9_custom.o 1to9_custom.c
+riscv64-unknown-elf-gcc -c -mabi=ilp32 -march=rv32im -o load.o load.S
+
+riscv64-unknown-elf-gcc -c -mabi=ilp32 -march=rv32im -o syscalls.o syscalls.c
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -Wl,--gc-sections -o firmware.elf load.o 1to9_custom.o syscalls.o -T riscv.ld -lstdc++
+chmod -x firmware.elf
+riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -nostdlib -o start.elf start.S -T start.ld -lstdc++
+chmod -x start.elf
+riscv64-unknown-elf-objcopy -O verilog start.elf start.tmp
+riscv64-unknown-elf-objcopy -O verilog firmware.elf firmware.tmp
+cat start.tmp firmware.tmp > firmware.hex
+python3 hex8tohex32.py firmware.hex > firmware32.hex
+rm -f start.tmp firmware.tmp
+iverilog -o testbench.vvp testbench.v picorv32.v
+chmod -x testbench.vvp
+vvp -N testbench.vvp
+
+```
+
+<h3>Explanation</h3>
+<p>
+<br>
+
+1. `riscv64-unknown-elf-gcc -c -mabi=ilp32 -march=rv32im -o 1to9_custom.o 1to9_custom.c`
+   - This command compiles the C source file `1to9_custom.c` into an object file `1to9_custom.o`. It uses the RISC-V GCC compiler targeting the ILP32 ABI (Application Binary Interface) and the RV32IM architecture.
+<br>
+
+2. `riscv64-unknown-elf-gcc -c -mabi=ilp32 -march=rv32im -o load.o load.S`
+   - Similar to the previous command, this compiles the assembly source file `load.S` into an object file `load.o`.
+<br>
+
+3. `riscv64-unknown-elf-gcc -c -mabi=ilp32 -march=rv32im -o syscalls.o syscalls.c`
+   - This compiles another C source file `syscalls.c` into an object file `syscalls.o`.
+<br>
+
+4. `riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -Wl,--gc-sections -o firmware.elf load.o 1to9_custom.o syscalls.o -T riscv.ld -lstdc++`
+   - This links the previously compiled object files (`load.o`, `1to9_custom.o`, `syscalls.o`) along with the necessary libraries and linker script `riscv.ld` to create an ELF executable named `firmware.elf`. The linker is instructed to perform garbage collection on unused sections.
+<br>
+
+5. `chmod -x firmware.elf`
+   - This command changes the permissions of the `firmware.elf` file to remove its execute permission.
+<br>
+
+6. `riscv64-unknown-elf-gcc -mabi=ilp32 -march=rv32im -nostdlib -o start.elf start.S -T start.ld -lstdc++`
+   - Similar to step 4, this compiles and links an assembly source file `start.S` with libraries and linker script `start.ld` to create another ELF executable named `start.elf`. The `-nostdlib` flag indicates that the standard library should not be included.
+<br>
+
+7. `chmod -x start.elf`
+   - Similar to step 5, this changes the permissions of the `start.elf` file to remove its execute permission.
+<br>
+
+8. `riscv64-unknown-elf-objcopy -O verilog start.elf start.tmp`
+   - This command uses the `objcopy` tool to convert the `start.elf` file into a Verilog memory initialization file `start.tmp` in the "verilog" format.
+<br>
+
+9. `riscv64-unknown-elf-objcopy -O verilog firmware.elf firmware.tmp`
+   - Similar to step 8, this converts the `firmware.elf` file into a Verilog memory initialization file `firmware.tmp`.
+<br>
+
+10. `cat start.tmp firmware.tmp > firmware.hex`
+    - This concatenates the content of `start.tmp` and `firmware.tmp` files to create a combined Verilog memory initialization file `firmware.hex`.
+<br>
+
+11. `python3 hex8tohex32.py firmware.hex > firmware32.hex`
+    - This step involves a Python script named `hex8tohex32.py`, which takes the `firmware.hex` file (assumed to contain 8-bit memory data) and converts it to 32-bit memory data format, saving the result in `firmware32.hex`.
+<br>
+
+12. `rm -f start.tmp firmware.tmp`
+    - This removes the temporary Verilog memory initialization files.
+<br>
+
+13. `iverilog -o testbench.vvp testbench.v picorv32.v`
+    - This compiles Verilog source files `testbench.v` and `picorv32.v` using the Icarus Verilog compiler to create a simulation executable `testbench.vvp`.
+<br>
+
+14. `chmod -x testbench.vvp`
+    - This removes the execute permission from the simulation executable.
+<br>
+
+15. `vvp -N testbench.vvp`
+    - This runs the compiled simulation executable using the VVP (Verilog VVP) simulator.
+<br>
+
+In summary, this script performs a series of compilation, linking, and conversion steps to prepare and simulate RISC-V assembly and C code using a combination of tools and scripts. The resulting simulation involve the execution of the RISC-V code within the given constraints and configurations.
+</p>
+
+
+</details>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <details>
 <summary><strong>Day 3</strong></summary>
 	
