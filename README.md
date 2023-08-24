@@ -6,7 +6,7 @@
  <details><summary><strong>C Program</strong></summary>
  <h3>C program doing sum of numbers from 1 to 6</h3>
  <h4>Code</h4>
-
+ 
 ```
 #include<stdio.h>
 int main(){
