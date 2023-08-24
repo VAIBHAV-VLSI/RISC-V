@@ -8,7 +8,7 @@
  <h4>Code</h4>
     
 ```  
-#include<stdio.h> 
+#include<stdio.h>   
 int main(){
    int n = 6;
    int i ;
