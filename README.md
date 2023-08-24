@@ -111,3 +111,89 @@ The -d flag specifies that we want to disassemble the code, and sum1ton.o is the
 </details>
 
 
+
+
+
+
+
+
+
+
+
+
+
+<details>
+<summary><strong>Day 3</strong></summary>
+	
+<details><summary><strong>TL-Verilog and Makerchip IDE</strong></summary>
+<p>TL-Verilog, short for Transaction-Level Verilog, is a hardware description and design language used for specifying and designing digital systems, particularly focusing on transaction-level abstraction and high-level design. It extends traditional Verilog and SystemVerilog languages by introducing higher-level constructs that facilitate the design and verification process, making it more suitable for complex system-on-chip (SoC) designs.</p>
+
+ <p>Makerchip is an online Integrated Development Environment (IDE) designed specifically for digital system design and hardware description. It provides a platform for creating, simulating, and visualizing digital designs using various hardware description languages and tools, including SystemVerilog, Verilog, and TL-Verilog. Makerchip aims to simplify the process of designing and simulating digital circuits by offering an accessible and user-friendly interface.</p>
+</details>
+
+<details><summary><strong>Introduction to Makerchip IDE</strong></summary>
+<h2>Pythagorean Template</h2>
+<div align = "center">
+<img width="1470" alt="1" src="https://github.com/VaibhavTiwari-IIITB/RISCV/assets/140998525/f05cd1b6-6bb3-4e7a-bcd8-ce1d0efc32b8">
+</div>
+
+
+<h2>Inverter</h2>
+<div align = "center">
+<img width="1470" alt="2" src="https://github.com/VaibhavTiwari-IIITB/RISCV/assets/140998525/13b6405d-48c7-49ca-8df2-66439ee62553">
+</div>
+
+<h2>Multiplexer</h2>
+<div align = "center">
+<img width="1470" alt="3" src="https://github.com/VaibhavTiwari-IIITB/RISCV/assets/140998525/c672a21a-d4bb-4fe3-98b9-50f8d0d4c29d">
+</div>
+
+ <h2>Vector Usage</h2>
+<div align = "center">
+<img width="1470" alt="4" src="https://github.com/VaibhavTiwari-IIITB/RISCV/assets/140998525/5896b706-a7c1-448d-a645-f6f644f6ea36">
+</div>
+
+<h2>Wide Multiplexer</h2>
+<div align = "center">
+<img width="1470" alt="5" src="https://github.com/VaibhavTiwari-IIITB/RISCV/assets/140998525/710930a4-f1d1-4804-9a9b-69240eff5fc0">
+</div>
+
+<h2>Calculator</h2>
+<div align = "center">
+<img width="1470" alt="6" src="https://github.com/VaibhavTiwari-IIITB/RISCV/assets/140998525/82fe89c8-3992-446c-82ac-fca177f6ac13">
+</div>
+<br>
+<div align="center"><h1>Sequential Logic</h1></div>
+<h2>4-bit Up Counter</h2>
+<div align = "center">
+<img width="1470" alt="8" src="https://github.com/VaibhavTiwari-IIITB/RISCV/assets/140998525/ef610cb6-e4d6-4dfe-9f10-5b0b8366613a">
+</div>
+
+<h2>Fibonacci Sequence</h2>
+<div align = "center">
+	
+<img width="959" alt="9" src="https://github.com/VaibhavTiwari-IIITB/RISCV/assets/140998525/4617f62f-8833-40c1-bb8a-08527870239e">
+<img width="1470" alt="10" src="https://github.com/VaibhavTiwari-IIITB/RISCV/assets/140998525/c3d1c0aa-16b3-41b3-9e8b-13e6cceed279">
+</div>
+ <div align="center">
+	 <h1>Pipelined Logic</h1>
+ </div>
+ <h2>2-Cycle Calculator</h2>
+<img width="1470" alt="11" src="https://github.com/VaibhavTiwari-IIITB/RISCV/assets/140998525/a17bd09d-8458-4bed-af8f-3997803d5e51">
+<br>
+ <div align="center">
+	 <h1>Validity</h1>
+ </div>
+ <p>In logic circuits and digital design, "validity" typically refers to the concept of ensuring that signals or data within a system are in a valid or reliable state before they are processed or used in subsequent stages. Validity plays a crucial role in maintaining the correctness and proper functioning of digital systems. </p>
+ <h3>Advantages of Validity</h3>
+ <p>
+	 <ul>
+		 <li> Reliable Operation: Validity guarantees that the system operates reliably and produces accurate results. Without ensuring the validity of inputs, the output of digital circuits could be unpredictable or incorrect.</li>
+		 <li>Validity ensures that data transitions are synchronized with clock edges, which leads to consistent behavior and predictable outputs. This is especially important in synchronous digital systems.</li>
+		 <li>Design Verification: Validity considerations are crucial during design verification and testing. Ensuring inputs are in valid states allows for more targeted testing and easier debugging of issues.</li>
+		 <li>Power Efficiency: Validity checks can prevent unnecessary switching of logic values when inputs are changing rapidly. This helps reduce dynamic power consumption in the system.</li>
+	 </ul>
+ </p>
+ </details>
+
+</details>
